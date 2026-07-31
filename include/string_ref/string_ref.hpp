@@ -6,7 +6,7 @@
 * through their respective implementation files         *
 \*******************************************************/
 
-// Find the repository here: 
+// Find the repository here: https://github.com/NeoZett/String-References
 
 
 /**********************************************************************\

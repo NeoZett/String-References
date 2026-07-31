@@ -12,6 +12,7 @@
 \*************************/
 
 // This is the amalgamated header. Find the repository here: 
+// https://github.com/NeoZett/String-References
 
 
 /**********************************************************************\
