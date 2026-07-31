@@ -1,0 +1,50 @@
+C++ String References
+=====================
+
+This project was made for fun, evolving into a github repository after many
+iterations. The project consists of three layers:
+
+1. String references and identifications. These allocates only 4 bytes
+   on a 64-bit ABI, which is because they are aliases for an unsigned
+   32-bit integer.
+
+2. The string object itself coupled with the pool; in other terms, objects
+   that handle string lifetime and interaction. The string object stores both 
+   the id of the string and a pointer to its pool, and thusly it allocates
+   around 16 bytes on a 64-bit ABI instead of only 4 bytes.
+
+3. String- and pool views. The pool view is intended for iterations,
+   introspections, and searches. Likewise, the string-view stores
+   a string reference, string pointer, and the string length as an
+   unsigned 32-bit integer. Because of these fields being on the same
+   object, the string-view allocates around 24 bytes on a 64-bit ABI.
+   If you don't use the string-view object, you will have to manually
+   retrieve relevant information using the string pool and string
+   pool view objects.
+
+On the pool, there is a custom unordered multi-map that automatically
+stores unsigned 64-bit integer keys, which hashes a string, and their
+corresponding references for deduplication. Hence, comparing two strings
+with the same pool only requires comparing the numerical value of
+their identification or reference values.
+
+This unordered multi-map avoids the heap allocations that the standard
+unordered multi-map otherwise allocates per seperate element. Instead,
+it supports the operations the pool actually relies on. In particular,
+erasure invalidates all iterators, while the normal unordered multi-map
+has stronger iterations guarantees.
+
+Furthermore, the important operations are exactly where this design
+is strongest: `emplace`, `equal_range`, `find`, contiguous nodes,
+cheap indices, and no per-string lookup-node allocation. This also
+makes the pool entirely vector-backed.
+
+In the extensions folder, there will also be string sets, maps,
+and other fun extensions that rely fully on these features in the
+future. 
+
+It is important to note, however, that a reference relies on being 
+associated with the correct pool. Otherwise it will yield the wrong
+string or throw an error.
+
+All references for a pool get invalidated if you clear the pool.

@@ -3,7 +3,7 @@
 
 /*******************************************************\
 * The `string_ref` include file implements all features *
-* through their respective implementation files         *
+* through their respective header files                 *
 \*******************************************************/
 
 // Find the repository here: https://github.com/NeoZett/String-References
