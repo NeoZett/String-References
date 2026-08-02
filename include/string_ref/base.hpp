@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include <string_ref/detail/unordered_multimap.hpp>
+#include <string_ref/detail/multimap.hpp>
 
 /// <summary>
 /// An interned string pool providing compact 32-bit string references and zero-copy retrieval.
@@ -49,7 +49,7 @@ namespace string_ref
          *        looks up a C-string for deduplication logic. It uses
          *        a string-hash as key to its identifier.
          */
-        using lookup_type = detail::unordered_multimap<string_hash, string_reference>;
+        using lookup_type = detail::hash_multimap<string_hash, string_reference>;
     }
 
     /* @brief The `string_reference` is the minimal presence

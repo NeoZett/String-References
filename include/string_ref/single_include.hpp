@@ -79,6 +79,15 @@ namespace string_ref
          * the operations needed by `string_pool` and similar data-oriented code.
          * Rehashing invalidates iterators. Insertion may invalidate iterators when
          * the node vector grows. Erasure invalidates all iterators.
+         * 
+		 * Through the inalagamated header, this class has a different name.
+		 * For the amalgamated header, this class is called `unordered_multimap`
+		 * because it is simplistic and efficient. But for a more complete
+         * implementation, it is called `hash_multimap` and is located in the
+		 * `detail` namespace where it inherits from a hash-table implementation.
+         * 
+         * Because of the simplistic nature of this amalgamated header, this is
+         * simply not included.
          */
         template<
             typename Key,

@@ -14,7 +14,6 @@ namespace string_ref
     class string_pool_view
     {
     public:
-
         using string_definition = string_pool::string_definition;
         using container_type = std::vector<string_definition>;
         using const_iterator = container_type::const_iterator;
@@ -132,7 +131,6 @@ namespace string_ref
         }
 
     private:
-
         string_pool* pool_;
 
         friend struct string_view;

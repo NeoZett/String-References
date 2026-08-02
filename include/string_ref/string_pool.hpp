@@ -17,7 +17,6 @@ namespace string_ref
     class string_pool
     {
     public:
-
         string_pool() = default;
 
         struct string_definition
@@ -251,7 +250,6 @@ namespace string_ref
         }
 
     private:
-
         static base::string_hash hash_string(
             const char* text) noexcept
         {

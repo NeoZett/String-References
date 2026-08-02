@@ -1,7 +1,7 @@
 #pragma once
 
 #include <initializer_list>
-#include <string_ref/extensions/detail/unordered_set.hpp>
+#include <string_ref/detail/set.hpp>
 #include <string_ref/string_pool.hpp>
 
 namespace string_ref::extensions
@@ -265,6 +265,6 @@ namespace string_ref::extensions
 
         string_pool* pool_;
 
-        detail::unordered_set<reference_type> references_;
+        detail::hash_set<reference_type> references_;
     };
 }

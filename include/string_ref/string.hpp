@@ -15,7 +15,6 @@ namespace string_ref
     class string
     {
     public:
-
         string() noexcept :
             id_(base::invalid_id),
             pool_(nullptr)
@@ -116,7 +115,6 @@ namespace string_ref
         }
 
     private:
-
         string(
             base::id_type id,
             string_pool* pool)
