@@ -76,7 +76,7 @@ namespace string_ref
          * std::unordered_multimap implementation.
          *
          * The container supports duplicate keys and is intentionally focused on
-         * the operations needed by string_pool and similar data-oriented code.
+         * the operations needed by `string_pool` and similar data-oriented code.
          * Rehashing invalidates iterators. Insertion may invalidate iterators when
          * the node vector grows. Erasure invalidates all iterators.
          */
@@ -1069,6 +1069,15 @@ namespace string_ref
         void reserve_pool(std::size_t bytes)
         {
             pool_.reserve(bytes);
+        }
+
+        [[nodiscard]]
+        bool has_string(const string& str)
+        {
+            if (!str.pool_ || str.pool_ != this)
+                return false;
+
+            return true;
         }
 
         [[nodiscard]]

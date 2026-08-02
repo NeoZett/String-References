@@ -1,11 +1,14 @@
 #pragma once
 
 #include <initializer_list>
-#include <unordered_set>
+#include <string_ref/extensions/detail/unordered_set.hpp>
 #include <string_ref/string_pool.hpp>
 
 namespace string_ref::extensions
 {
+    // We are introducing a custom iterator where the *opterator gives a string object
+    // and a reference() function gives the reference
+
     class string_set
     {
     public:
@@ -262,6 +265,6 @@ namespace string_ref::extensions
 
         string_pool* pool_;
 
-        std::unordered_set<reference_type> references_;
+        detail::unordered_set<reference_type> references_;
     };
 }

@@ -21,7 +21,7 @@ namespace string_ref::detail
      * std::unordered_multimap implementation.
      *
      * The container supports duplicate keys and is intentionally focused on
-     * the operations needed by string_pool and similar data-oriented code.
+     * the operations needed by `string_pool` and similar data-oriented code.
      * Rehashing invalidates iterators. Insertion may invalidate iterators when
      * the node vector grows. Erasure invalidates all iterators.
      */
@@ -106,7 +106,7 @@ namespace string_ref::detail
                 static_cast<std::size_t>(invalid_index))
             {
                 throw std::length_error(
-                    "string_ref::unordered_multimap exceeds 32-bit index capacity");
+                    "string_ref::detail::unordered_multimap exceeds 32-bit index capacity");
             }
 
             const float projected_load =
