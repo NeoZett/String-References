@@ -9,7 +9,6 @@
 #include <new>
 #include <optional>
 #include <stdexcept>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -92,17 +91,14 @@ namespace string_ref::detail
 			{
 			}
 
-			// Value is often not assignable (e.g. std::pair<const Key, T>
-			// has a const first member), so nodes are relocated via
-			// destroy + placement-new move-construction rather than `=`.
-			node(node&& other) noexcept(std::is_nothrow_move_constructible_v<Value>)
-				: value(std::move(other.value)), next(other.next)
-			{
-			}
-
-			node(const node&) = delete;
-			node& operator=(const node&) = delete;
-			node& operator=(node&&) = delete;
+			// Value is frequently not *assignable* (e.g. std::pair<const Key, T>
+			// has a const first member, so its operator= is deleted) — but it
+			// is still copy- and move-*constructible*, so node's implicitly
+			// generated copy/move constructors work fine and are left alone.
+			// node's copy/move assignment operators end up implicitly deleted
+			// automatically (because Value's are deleted); that's fine, since
+			// relocation (erase_single_at) uses destroy + placement-new
+			// construction rather than assignment.
 		};
 
 		static constexpr std::size_t initial_bucket_count = 8;
@@ -391,8 +387,15 @@ namespace string_ref::detail
 			{
 			}
 
-			reference operator*() const { return table_->nodes_[index_].value; }
-			pointer operator->() const { return &table_->nodes_[index_].value; }
+			reference operator*() const 
+			{
+				return table_->nodes_[index_].value;
+			}
+
+			pointer operator->() const
+			{
+				return &table_->nodes_[index_].value;
+			}
 
 			const_iterator& operator++()
 			{

@@ -1,270 +1,301 @@
 #pragma once
 
+#include <cassert>
 #include <initializer_list>
+#include <string_ref/detail/resolving_iterator.hpp>
 #include <string_ref/detail/set.hpp>
 #include <string_ref/string_pool.hpp>
 
 namespace string_ref::extensions
 {
-    // We are introducing a custom iterator where the *opterator gives a string object
-    // and a reference() function gives the reference
+	class string_set
+	{
+	public:
+		using value_type = string;
+		using reference_type = string_reference;
+		using size_type = std::size_t;
 
-    class string_set
-    {
-    public:
+	private:
+		// Turns a stored reference_type back into a `string` on demand.
+		// This is the only set-specific knowledge resolving_iterator needs.
+		struct resolve_string
+		{
+			string operator()(string_pool& pool, reference_type ref) const
+			{
+				return pool.get(ref);
+			}
+		};
 
-        using value_type = string;
-        using reference_type = string_reference;
-        using size_type = std::size_t;
+	public:
+		using iterator = detail::resolving_iterator<
+			string, string_pool,
+			detail::hash_set<reference_type>::iterator,
+			resolve_string>;
 
-    public:
+		using const_iterator = detail::resolving_iterator<
+			string, string_pool,
+			detail::hash_set<reference_type>::const_iterator,
+			resolve_string>;
 
-        explicit string_set(
-            string_pool& pool)
-            : pool_(&pool)
-        {
-        }
+		explicit string_set(
+			string_pool& pool)
+			: pool_(&pool)
+		{
+		}
 
-        string_set(
-            string_pool& pool,
-            std::initializer_list<const char*> init)
-            : pool_(&pool)
-        {
-            reserve(init.size());
+		string_set(
+			string_pool& pool,
+			std::initializer_list<const char*> init)
+			: pool_(&pool)
+		{
+			reserve(init.size());
 
-            for (const char* text : init)
-                insert(text);
-        }
+			for (const char* text : init)
+				insert(text);
+		}
 
-        template <class Iterator>
-        string_set(
-            string_pool& pool,
-            Iterator first,
-            Iterator last)
-            : pool_(&pool)
-        {
-            for (; first != last; ++first)
-                insert(*first);
-        }
+		template <class Iterator>
+		string_set(
+			string_pool& pool,
+			Iterator first,
+			Iterator last)
+			: pool_(&pool)
+		{
+			for (; first != last; ++first)
+				insert(*first);
+		}
 
-        [[nodiscard]]
-        bool empty() const noexcept
-        {
-            return references_.empty();
-        }
+		[[nodiscard]]
+		bool empty() const noexcept
+		{
+			return references_.empty();
+		}
 
-        [[nodiscard]]
-        size_type size() const noexcept
-        {
-            return references_.size();
-        }
+		[[nodiscard]]
+		size_type size() const noexcept
+		{
+			return references_.size();
+		}
 
-        void reserve(size_type count)
-        {
-            references_.reserve(count);
-        }
+		void reserve(size_type count)
+		{
+			references_.reserve(count);
+		}
 
-        void clear() noexcept
-        {
-            references_.clear();
-        }
+		void clear() noexcept
+		{
+			references_.clear();
+		}
 
-        reference_type insert(const char* text)
-        {
-            reference_type ref = pool_->append_string(text);
+		reference_type insert(const char* text)
+		{
+			reference_type ref = pool_->append_string(text);
 
-            references_.insert(ref);
+			references_.insert(ref);
 
-            return ref;
-        }
+			return ref;
+		}
 
-        reference_type insert(const string& str)
-        {
-            references_.insert(str.reference());
+		reference_type insert(const string& str)
+		{
+			assert(str.pool() == pool_ && "string belongs to a different string_pool");
 
-            return str.reference();
-        }
+			references_.insert(str.reference());
 
-        reference_type insert(reference_type ref)
-        {
-            pool_->check_id(ref);
+			return str.reference();
+		}
 
-            references_.insert(ref);
+		reference_type insert(reference_type ref)
+		{
+			pool_->check_id(ref);
 
-            return ref;
-        }
+			references_.insert(ref);
 
-        bool erase(reference_type ref)
-        {
-            return references_.erase(ref) != 0;
-        }
+			return ref;
+		}
 
-        bool erase(const char* text)
-        {
-            auto ref = pool_->find_reference(text);
+		bool erase(reference_type ref)
+		{
+			return references_.erase(ref) != 0;
+		}
 
-            if (ref == base::invalid_reference)
-                return false;
+		bool erase(const char* text)
+		{
+			auto ref = pool_->find(text);
 
-            return erase(ref);
-        }
+			if (ref == base::invalid_reference)
+				return false;
 
-        bool erase(const string& str)
-        {
-            return erase(str.reference());
-        }
+			return erase(ref);
+		}
 
-        [[nodiscard]]
-        bool contains(reference_type ref) const
-        {
-            return references_.contains(ref);
-        }
+		bool erase(const string& str)
+		{
+			return erase(str.reference());
+		}
 
-        [[nodiscard]]
-        bool contains(const char* text) const
-        {
-            auto ref = pool_->find_reference(text);
+		[[nodiscard]]
+		bool contains(reference_type ref) const
+		{
+			return references_.contains(ref);
+		}
 
-            if (ref == base::invalid_reference)
-                return false;
+		[[nodiscard]]
+		bool contains(const char* text) const
+		{
+			auto ref = pool_->find(text);
 
-            return contains(ref);
-        }
+			if (ref == base::invalid_reference)
+				return false;
 
-        [[nodiscard]]
-        bool contains(const string& str) const
-        {
-            return contains(str.reference());
-        }
+			return contains(ref);
+		}
 
-        [[nodiscard]]
-        string find(reference_type ref) const
-        {
-            if (!contains(ref))
-                return {};
+		[[nodiscard]]
+		bool contains(const string& str) const
+		{
+			return contains(str.reference());
+		}
 
-            return string(ref, *pool_);
-        }
+		[[nodiscard]]
+		string find(reference_type ref) const
+		{
+			if (!contains(ref))
+				return {};
 
-        [[nodiscard]]
-        string find(const char* text) const
-        {
-            auto ref = pool_->find_reference(text);
+			return pool_->reconstruct_reference(ref);
+		}
 
-            if (ref == base::invalid_reference)
-                return {};
+		[[nodiscard]]
+		string find(const char* text) const
+		{
+			auto ref = pool_->find(text);
 
-            return find(ref);
-        }
+			if (ref == base::invalid_reference)
+				return {};
 
-        [[nodiscard]]
-        string find(const string& str) const
-        {
-            return find(str.reference());
-        }
-        
-        void merge(const string_set& other)
-        {
-            for (auto ref : other.references_)
-                references_.insert(ref);
-        }
+			return find(ref);
+		}
 
-        string_set union_with(const string_set& other) const
-        {
-            string_set result(*pool_);
+		[[nodiscard]]
+		string find(const string& str) const
+		{
+			return find(str.reference());
+		}
 
-            result.merge(*this);
-            result.merge(other);
+		void merge(const string_set& other)
+		{
+			assert(other.pool_ == pool_ && "cannot merge sets from different string_pools");
 
-            return result;
-        }
+			for (auto ref : other.references_)
+				references_.insert(ref);
+		}
 
-        string_set intersection(const string_set& other) const
-        {
-            string_set result(*pool_);
+		string_set union_with(const string_set& other) const
+		{
+			assert(other.pool_ == pool_ && "cannot union with sets from different string_pools");
 
-            for (auto ref : references_)
-            {
-                if (other.contains(ref))
-                    result.references_.insert(ref);
-            }
+			string_set result(*pool_);
 
-            return result;
-        }
+			result.merge(*this);
+			result.merge(other);
 
-        string_set difference(const string_set& other) const
-        {
-            string_set result(*pool_);
+			return result;
+		}
 
-            for (auto ref : references_)
-            {
-                if (!other.contains(ref))
-                    result.references_.insert(ref);
-            }
+		string_set intersection(const string_set& other) const
+		{
+			assert(other.pool_ == pool_ && "cannot intersect with sets from different string_pools");
 
-            return result;
-        }
+			string_set result(*pool_);
 
-        string_set& operator+=(const char* text)
-        {
-            insert(text);
-            return *this;
-        }
+			for (auto ref : references_)
+			{
+				if (other.contains(ref))
+					result.references_.insert(ref);
+			}
 
-        string_set& operator+=(const string& str)
-        {
-            insert(str);
-            return *this;
-        }
+			return result;
+		}
 
-        string_set& operator+=(reference_type ref)
-        {
-            insert(ref);
-            return *this;
-        }
+		string_set difference(const string_set& other) const
+		{
+			assert(other.pool_ == pool_ && "cannot differentiate from different string_pools");
 
-        string_set& operator-=(const char* text)
-        {
-            erase(text);
-            return *this;
-        }
+			string_set result(*pool_);
 
-        string_set& operator-=(const string& str)
-        {
-            erase(str);
-            return *this;
-        }
+			for (auto ref : references_)
+			{
+				if (!other.contains(ref))
+					result.references_.insert(ref);
+			}
 
-        string_set& operator-=(reference_type ref)
-        {
-            erase(ref);
-            return *this;
-        }
+			return result;
+		}
 
-        auto begin() noexcept
-        {
-            return references_.begin();
-        }
+		string_set& operator+=(const char* text)
+		{
+			insert(text);
+			return *this;
+		}
 
-        auto end() noexcept
-        {
-            return references_.end();
-        }
+		string_set& operator+=(const string& str)
+		{
+			insert(str);
+			return *this;
+		}
 
-        auto begin() const noexcept
-        {
-            return references_.begin();
-        }
+		string_set& operator+=(reference_type ref)
+		{
+			insert(ref);
+			return *this;
+		}
 
-        auto end() const noexcept
-        {
-            return references_.end();
-        }
+		string_set& operator-=(const char* text)
+		{
+			erase(text);
+			return *this;
+		}
 
-    private:
+		string_set& operator-=(const string& str)
+		{
+			erase(str);
+			return *this;
+		}
 
-        string_pool* pool_;
+		string_set& operator-=(reference_type ref)
+		{
+			erase(ref);
+			return *this;
+		}
 
-        detail::hash_set<reference_type> references_;
-    };
+		[[nodiscard]] 
+		iterator begin() noexcept 
+		{ 
+			return { pool_, references_.begin() }; 
+		}
+
+		[[nodiscard]] 
+		iterator end() noexcept 
+		{ 
+			return { pool_, references_.end() }; 
+		}
+
+		[[nodiscard]] 
+		const_iterator begin() const noexcept 
+		{ 
+			return { pool_, references_.begin() }; 
+		}
+
+		[[nodiscard]] 
+		const_iterator end() const noexcept 
+		{ 
+			return { pool_, references_.end() }; 
+		}
+
+	private:
+		string_pool* pool_;
+
+		detail::hash_set<reference_type> references_;
+	};
 }

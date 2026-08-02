@@ -9,6 +9,14 @@
 
 namespace string_ref
 {
+    namespace extensions
+    {
+        class string_set;
+        class string_map;
+        class string_multimap;
+        class string_registry;
+    }
+
     /* @brief The `string_pool` optimizes and unifies into
      *        a singular namespace to retrieve strings.
      *        This minimizes allocations by storing each
@@ -302,6 +310,8 @@ namespace string_ref
         friend class string;
         friend class string_pool_view;
         friend struct string_view;
+
+        friend class extensions::string_set;
     };
 
     inline string::string(
@@ -449,7 +459,7 @@ namespace string_ref
         pool.clear();
     }
 
-    inline string_pool& static_pool()
+    inline string_pool& get_global_pool()
     {
         return string_pool::instance();
     }

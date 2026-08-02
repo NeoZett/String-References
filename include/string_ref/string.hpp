@@ -42,6 +42,12 @@ namespace string_ref
         }
 
         [[nodiscard]]
+		string_pool* pool() const noexcept
+		{
+			return pool_;
+		}
+
+        [[nodiscard]]
         bool empty() const
         {
             return size() == 0;
