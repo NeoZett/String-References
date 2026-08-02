@@ -9,14 +9,20 @@
 
 int main()
 {
-	string_ref::extensions::string_set mySet(string_ref::get_global_pool());
+	string_ref::string_pool pool;
 
-	mySet.insert("hello");
+	string_ref::extensions::string_set mySet(pool);
+
+	string_ref::string text("hello", pool);
+
+	mySet.insert(text);
 
 	for (const auto& str : mySet)
 	{
-		std::cout << str.c_str() << std::endl;
+		std::cout << str.reference() << ": " << str.c_str() << std::endl;
 	}
+
+	std::cout << mySet.contains(text.reference()) << std::endl;
 
 	return 0;
 }

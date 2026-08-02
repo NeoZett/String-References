@@ -34,7 +34,7 @@ namespace string_ref
         };
 
         [[nodiscard]]
-        static string_pool& instance() noexcept
+        static string_pool& get_global_instance() noexcept
         {
             static string_pool pool;
             return pool;
@@ -312,7 +312,12 @@ namespace string_ref
         friend struct string_view;
 
         friend class extensions::string_set;
+        friend class extensions::string_map;
+        friend class extensions::string_multimap;
+        friend class extensions::string_registry;
     };
+
+	// Public inline implementations and interface
 
     inline string::string(
         const char* text)
@@ -322,7 +327,7 @@ namespace string_ref
         if (!text)
             throw std::invalid_argument("text cannot be null");
 
-        *this = string_pool::instance().create_string(text);
+        *this = string_pool::get_global_instance().create_string(text);
     }
 
     inline string::string(
@@ -356,7 +361,7 @@ namespace string_ref
     inline string_reference append_string(
         const char* text)
     {
-        return string_pool::instance().append_string(text);
+        return string_pool::get_global_instance().append_string(text);
     }
 
     inline string_reference append_string(
@@ -370,7 +375,7 @@ namespace string_ref
     inline string create_string(
         const char* text)
     {
-        return string_pool::instance().create_string(text);
+        return string_pool::get_global_instance().create_string(text);
     }
 
     [[nodiscard]]
@@ -385,7 +390,7 @@ namespace string_ref
     inline string reconstruct_reference(
         const string_reference ref)
     {
-        return string_pool::instance().reconstruct_reference(ref);
+        return string_pool::get_global_instance().reconstruct_reference(ref);
     }
 
     [[nodiscard]]
@@ -399,13 +404,13 @@ namespace string_ref
     inline const char* get(
         const string& str)
     {
-        return string_pool::instance().get(str);
+        return string_pool::get_global_instance().get(str);
     }
 
     inline const char* get(
         const string_reference ref)
     {
-        return string_pool::instance().get(ref);
+        return string_pool::get_global_instance().get(ref);
     }
 
     inline const char* get(
@@ -425,13 +430,13 @@ namespace string_ref
     inline std::size_t length(
         const string& str)
     {
-        return string_pool::instance().length(str);
+        return string_pool::get_global_instance().length(str);
     }
 
     inline std::size_t length(
         const string_reference ref)
     {
-        return string_pool::instance().length(ref);
+        return string_pool::get_global_instance().length(ref);
     }
 
     inline std::size_t length(
@@ -450,7 +455,7 @@ namespace string_ref
 
     inline void clear()
     {
-        string_pool::instance().clear();
+        string_pool::get_global_instance().clear();
     }
 
     inline void clear(
@@ -461,6 +466,6 @@ namespace string_ref
 
     inline string_pool& get_global_pool()
     {
-        return string_pool::instance();
+        return string_pool::get_global_instance();
     }
 }

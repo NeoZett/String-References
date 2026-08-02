@@ -12,10 +12,8 @@
 #include <utility>
 #include <vector>
 
-// Comments will gradually be removed when they are moved to the documentation. The code is still in early development and subject to change.
-
-// Understand me when I say this, and I will make this clear; I am learning about this very much as I am making this.
-// Early adaptations may be subject to change through later development.
+// Comments will gradually be removed when they are moved to the documentation.
+// The code is still in early development and subject to change.
 
 namespace string_ref::detail
 {
