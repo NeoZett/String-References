@@ -24,15 +24,15 @@ iterations. The project consists of three layers:
 
 On the pool, there is a custom unordered multi-map that automatically
 stores unsigned 64-bit integer keys, which hashes a string, and their
-corresponding references for deduplication. Hence, comparing two strings
-with the same pool only requires comparing the numerical value of
-their identification or reference values.
+corresponding references for deduplication. Hence, comparing two
+strings with the same pool only requires comparing the numerical
+value of their identification or reference values.
 
 This unordered multi-map avoids the heap allocations that the standard
 unordered multi-map otherwise allocates per seperate element. Instead,
 it supports the operations the pool actually relies on. In particular,
-erasure invalidates all iterators, while the normal unordered multi-map
-has stronger iterations guarantees.
+erasure invalidates all iterators, while the normal unordered
+multi-map has stronger iterations guarantees.
 
 Furthermore, the important operations are exactly where this design
 is strongest: `emplace`, `equal_range`, `find`, contiguous nodes,

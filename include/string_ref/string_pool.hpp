@@ -155,6 +155,15 @@ namespace string_ref
         }
 
         [[nodiscard]]
+        bool has_string(const string& str)
+        {
+            if (!str.pool_ || str.pool_ != this)
+                return false;
+
+            return true;
+        }
+
+        [[nodiscard]]
         bool contains(
             const char* text) const noexcept
         {

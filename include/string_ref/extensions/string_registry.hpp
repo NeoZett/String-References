@@ -4,7 +4,7 @@
 
 namespace string_ref::extensions
 {
-	class string_map
+	class string_registry
 	{
 	};
 }
