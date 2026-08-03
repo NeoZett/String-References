@@ -115,7 +115,7 @@ SOFTWARE.
 
 ---
 
-For more information, see the documentation in the `documentation.txt` file.
+For more information, see the documentation in the [`documentation.txt`](documentation.txt) file.
 This file was purposefully made a text file for easy reference and compatibility.
 
-You can also see the documentation on this wiki-page.
+You can also see the documentation on this [`wiki-page`](home).
