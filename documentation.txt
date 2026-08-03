@@ -1,10 +1,15 @@
-C++ String References
-=====================
 
-This project was made for fun, evolving into a github repository after many
+>>>>>>>>>>>>>>>>>>>>>>>>>> C++ String References <<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+============================================================================
+
+Abstract
+----------------------------------------------------------------------------
+
+This project was made for fun, becoming a github repository after many
 iterations. The project consists of three layers:
 
-1. String references and identifications. These allocates only 4 bytes
+1. String references and identifications. These allocate only 4 bytes
    on a 64-bit ABI, which is because they are aliases for an unsigned
    32-bit integer.
 
@@ -21,6 +26,47 @@ iterations. The project consists of three layers:
    If you don't use the string-view object, you will have to manually
    retrieve relevant information using the string pool and string
    pool view objects.
+
+Table Of Contents
+----------------------------------------------------------------------------
+
+Abstract...................................................................1
+Table Of Contents..........................................................1
+1. Prefatory...............................................................1
+   1.1 Introduction........................................................1
+   1.2 Purpose.............................................................2
+   1.3 Limitations.........................................................2
+       1.3.1 Dependencies..................................................2
+       1.3.2 Software Architecture.........................................2
+       1.3.3 Hardware Requirements.........................................2
+   2. Bakground............................................................2
+   2.1 Glossary of Terms...................................................2
+   2.2 Literature Review...................................................2
+3. Method..................................................................2
+   3.1 Methodology.........................................................2
+   3.2 Implementations.....................................................2
+4. Implementations.........................................................3
+   4.1 Summary.............................................................3
+   4.2 Implementation Details..............................................3
+   4.3 Performance.........................................................3
+   4.6 String Pool and String Pool View....................................3
+   4.7 String Reference and String View....................................3
+   4.8 String Set, String Map, and String Multi-Map........................3
+   4.9 The Alagmated Header File...........................................3
+   4.10 The Hash-Table Implementation......................................3
+   4.11 Extensions.........................................................3
+5. Discussion and Conclucions..............................................3
+   5.1 Implementation Discussion...........................................3
+   5.2 Method Discussion...................................................3
+   5.3 Future Work.........................................................3
+List of Sources............................................................4
+Appendices.................................................................4
+
+1. Prefatory
+----------------------------------------------------------------------------
+
+   1.1 Introduction
+-------------------
 
 On the pool, there is a custom unordered multi-map that automatically
 stores unsigned 64-bit integer keys, which hashes a string, and their
@@ -48,3 +94,156 @@ associated with the correct pool. Otherwise it will yield the wrong
 string or throw an error.
 
 All references for a pool get invalidated if you clear the pool.
+
+   1.2 Purpose
+--------------
+
+This library provides a fast and efficient way to handle strings in C++.
+It is designed to minimize memory usage and maximize performance, making
+it suitable for applications that require high-performance string handling.
+
+This file will also provide a detailed explanation of the library's
+features, usage, and limitations. It will not explain how to contribute
+to this project, see the CONTRIBUTING.md file for that.
+
+   1.3 Limitations
+------------------
+
+...
+
+      1.3.1 Dependencies
+------------------------
+
+...
+
+      1.3.2 Software Architecture
+---------------------------------
+
+...
+
+      1.3.3 Hardware Requirements
+---------------------------------
+
+...
+
+   2. Bakground
+----------------------------------------------------------------------------
+
+...
+
+   2.1 Glossary of Terms
+------------------------
+
+...
+
+   2.2 Literature Review
+------------------------
+
+...
+
+3. Method
+----------------------------------------------------------------------------
+
+   3.1 Methodology
+------------------
+
+...
+
+  3.5 Implementations
+---------------------
+
+...
+
+4. Implementations
+----------------------------------------------------------------------------
+
+   4.1 Summary
+--------------
+
+...
+
+   4.2 Implementation Details
+-----------------------------
+
+...
+
+   4.3 Performance
+------------------
+
+...
+
+   4.6 String Pool and String Pool View
+--------------------------------------
+
+...
+
+   4.7 String Reference and String View
+--------------------------------------
+
+...
+
+   4.8 String Set, String Map, and String Multi-Map
+---------------------------------------------------
+
+...
+
+   4.9 The Amalgamated Header File
+----------------------------------
+
+The amalgamated header file is a single header file that contains all
+the implementations that are otherwise implemented through seperated
+header files. This is useful for users that want to use the library
+without having to include multiple files.
+
+The amalgamated header file does not support the extensions, and since
+recent updates the amalgamated header uses a different multi-map
+implementation. 
+
+   4.10 The Hash-Table Implementation
+-------------------------------------
+
+The unordered multi-map implementation has now been
+seperated into seperate implementations and been renamed to
+`hash_map` inside the details folder.
+
+The hash table implementation supports up to 4 billion elements,
+and is designed to be cache-friendly and fast. It uses buckets and
+templates that lets it function as three different container types.
+That is a set, map, and multi-map.
+
+Any similar containers in the String Reference library will always be
+deduced into one of these three implementations for efficiency and
+for the standard.
+
+   4.11 Extensions
+------------------
+
+...
+
+5. Discussion and Conclucions
+----------------------------------------------------------------------------
+
+   5.1 Implementation Discussion
+--------------------------------
+
+...
+
+   5.2 Method Discussion
+------------------------
+
+...
+
+   5.3 Future Work
+------------------
+
+...
+
+List of Sources
+----------------------------------------------------------------------------
+
+...
+
+Appendices
+----------------------------------------------------------------------------
+
+...
