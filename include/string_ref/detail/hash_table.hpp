@@ -598,13 +598,31 @@ namespace string_ref::detail
 			return { iterator(this, index), true };
 		}
 
-		std::pair<iterator, bool> insert(const value_type& value) { return emplace(value); }
-		std::pair<iterator, bool> insert(value_type&& value) { return emplace(std::move(value)); }
+		std::pair<iterator, bool> insert(const value_type& value)
+		{
+			return emplace(value);
+		}
 
-		iterator find(const Key& key) { return iterator(this, find_index(key)); }
-		const_iterator find(const Key& key) const { return const_iterator(this, find_index(key)); }
+		std::pair<iterator, bool> insert(value_type&& value)
+		{
+			return emplace(std::move(value));
+		}
 
-		[[nodiscard]] bool contains(const Key& key) const { return find_index(key) != invalid_index; }
+		iterator find(const Key& key)
+		{
+			return iterator(this, find_index(key));
+		}
+
+		const_iterator find(const Key& key) const
+		{
+			return const_iterator(this, find_index(key));
+		}
+
+		[[nodiscard]]
+		bool contains(const Key& key) const
+		{
+			return find_index(key) != invalid_index;
+		}
 
 		[[nodiscard]]
 		size_type count(const Key& key) const
