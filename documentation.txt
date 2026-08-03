@@ -1,4 +1,4 @@
-
+﻿
 >>>>>>>>>>>>>>>>>>>>>>>>>> C++ String References <<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 ============================================================================
@@ -14,53 +14,58 @@ iterations. The project consists of three layers:
    32-bit integer.
 
 2. The string object itself coupled with the pool; in other terms, objects
-   that handle string lifetime and interaction. The string object stores both 
+   that handle string interaction and lifetime. The string object stores both 
    the id of the string and a pointer to its pool, and thusly it allocates
-   around 16 bytes on a 64-bit ABI instead of only 4 bytes.
+   around 16 bytes on a 64-bit ABI instead of only 4 bytes like the string
+   reference does.
 
 3. String- and pool views. The pool view is intended for iterations,
    introspections, and searches. Likewise, the string-view stores
-   a string reference, string pointer, and the string length as an
-   unsigned 32-bit integer. Because of these fields being on the same
-   object, the string-view allocates around 24 bytes on a 64-bit ABI.
-   If you don't use the string-view object, you will have to manually
-   retrieve relevant information using the string pool and string
-   pool view objects.
+   a string reference and string pointer. It also stores the string
+   length as an unsigned 32-bit integer.
+   
+   Because these fields are on the same object, the string-view allocates
+   around 24 bytes on a 64-bit ABI. If you don't use the string-view object,
+   you have to manually retrieve relevant information using the string pool
+   and/or string pool view objects. This is more efficient because you are
+   only retrieving relevant information.
 
 Table Of Contents
 ----------------------------------------------------------------------------
 
-Abstract...................................................................1
-Table Of Contents..........................................................1
-1. Prefatory...............................................................1
-   1.1 Introduction........................................................1
-   1.2 Purpose.............................................................2
-   1.3 Limitations.........................................................2
-       1.3.1 Dependencies..................................................2
-       1.3.2 Software Architecture.........................................2
-       1.3.3 Hardware Requirements.........................................2
-   2. Bakground............................................................2
-   2.1 Glossary of Terms...................................................2
-   2.2 Literature Review...................................................2
-3. Method..................................................................2
-   3.1 Methodology.........................................................2
-   3.2 Implementations.....................................................2
-4. Implementations.........................................................3
-   4.1 Summary.............................................................3
-   4.2 Implementation Details..............................................3
-   4.3 Performance.........................................................3
-   4.6 String Pool and String Pool View....................................3
-   4.7 String Reference and String View....................................3
-   4.8 String Set, String Map, and String Multi-Map........................3
-   4.9 The Alagmated Header File...........................................3
-   4.10 The Hash-Table Implementation......................................3
-   4.11 Extensions.........................................................3
-5. Discussion and Conclucions..............................................3
-   5.1 Implementation Discussion...........................................3
-   5.2 Method Discussion...................................................3
-   5.3 Future Work.........................................................3
-List of Sources............................................................4
-Appendices.................................................................4
+---------------------------------------------------------------------------┐
+Abstract.................................................................1 |
+Table Of Contents........................................................1 |
+1. Prefatory.............................................................1 |
+   1.1 Introduction......................................................1 |
+   1.2 Purpose...........................................................2 |
+   1.3 Limitations and Requirements......................................2 |
+       1.3.1 Dependencies................................................2 |
+       1.3.2 Software Architecture.......................................2 |
+       1.3.3 Hardware Requirements.......................................2 |
+   2. Bakground..........................................................2 |
+   2.1 Glossary of Terms.................................................2 |
+3. Method................................................................2 |
+   3.1 Methodology.......................................................2 |
+   3.2 Implementations...................................................2 |
+4. Implementations.......................................................3 |
+   4.1 Summary...........................................................3 |
+   4.2 Implementation Details............................................3 |
+   4.3 Performance.......................................................3 |
+   4.6 String Pool and String Pool View..................................3 |
+   4.7 String Reference and String View..................................3 |
+   4.8 String Set, String Map, and String Multi-Map......................3 |
+   4.9 The Alagmated Header File.........................................3 |
+   4.10 The Hash-Table Implementation....................................3 |
+   4.11 Extensions.......................................................3 |
+5. Discussion and Conclucions............................................3 |
+   5.1 Implementation Discussion.........................................3 |
+   5.2 Method Discussion.................................................3 |
+   5.3 Future Work.......................................................3 |
+License..................................................................4 |
+List of Sources..........................................................4 |
+Appendices...............................................................4 |
+---------------------------------------------------------------------------┘
 
 1. Prefatory
 ----------------------------------------------------------------------------
@@ -71,8 +76,8 @@ Appendices.................................................................4
 On the pool, there is a custom unordered multi-map that automatically
 stores unsigned 64-bit integer keys, which hashes a string, and their
 corresponding references for deduplication. Hence, comparing two
-strings with the same pool only requires comparing the numerical
-value of their identification or reference values.
+strings that are coupled with the same pool only requires comparing
+the numerical value of their identification or reference value.
 
 This unordered multi-map avoids the heap allocations that the standard
 unordered multi-map otherwise allocates per seperate element. Instead,
@@ -106,40 +111,96 @@ This file will also provide a detailed explanation of the library's
 features, usage, and limitations. It will not explain how to contribute
 to this project, see the CONTRIBUTING.md file for that.
 
-   1.3 Limitations
-------------------
+   1.3 Limitations and Requirements
+-----------------------------------
 
-...
+If you use this library, you must store every pool. The pool is the
+backbone to all string allocations; every string lives on its pool.
+If you don't store the pool, you will not be able to retrieve the string
+from the reference.
+
+The map, set, and multi-map implementations are not thread-safe. They all
+rely on a pool, which is not thread-safe by itself. If you want to use these
+containers, you must ensure that the pool is not accessed by multiple threads
+at the same time.
+
+Hereafter are the requirements for the library:
+
+* The first requirement is a pool that can store multiple strings in an
+  internal pool; and for that reason we call it a string pool; it is solely
+  responsible for the lifetime of all strings that lives inside it.
+  
+* The second requirement is a string that stores a pointer to a pool,
+  the identification to a definition (containing the offset and
+  length of a string), and functions that can retrieve a string and
+  information about it using the pointer to its pool and its
+  identification.
+
+* The third requirement is a string reference that is an alias for the
+  identification of the string, which is an unsigned 32-bit integer and
+  that can be used to retrieve the string and information about it using
+  the pool that it lives in.
+
+* The fourth requirement is a string pool view that can be used to iterate
+  over the strings in the pool, and a string view that can be used to retrieve
+  information about a string without having to retrieve the string itself.
+
+Anything outside of these specifications is considered an extension,
+and is not part of the core library.
 
       1.3.1 Dependencies
 ------------------------
 
-...
+This library works for a minimum version of C++17.
+All implementations are header-only, and there are no external dependencies,
+only the standard library. The library is designed to be portable and should
+work on any platform that supports C++17.
 
       1.3.2 Software Architecture
 ---------------------------------
 
-...
+This library is designed to be modular and extensible. It is built on a
+foundation of string references, string pools, and string views. The library
+is designed to be easy to use and understand, with a clear separation of
+concerns between different components. The library is also designed to be
+efficient, with a focus on minimizing memory usage and maximizing performance.
+
+In the details, there is a hash-table implementation that is used by the pool
+to store string references by their string hash. This hash-table has a
+implementation that supports up to 4 billion elements, and is designed to
+be cache-friendly and fast. It uses buckets and templates that lets it
+function as three different container types. That is a set, map, and multi-map.
 
       1.3.3 Hardware Requirements
 ---------------------------------
 
-...
+This library does not have any specific hardware requirements. It is designed
+to be portable and should work on any platform that supports C++17. However,
+it is recommended to use a 64-bit architecture for optimal performance.
 
    2. Bakground
 ----------------------------------------------------------------------------
 
-...
+Clang and LLVM are some of many compilers that require incredible performance,
+and in doing so, they all implement their own string reference and string pool
+implementations or they discard the string when it has been tokenized. This
+gives the compiler a performance boost, but it also makes it harder to work
+with strings in a more general sense.
+
+This library is designed to provide a fast and efficient way to handle strings
+in C++, while also being easy to use. It is important to note that Clang and
+LLVM are incredibly fast, and this library is not designed to compete with them.
+Instead, it is designed to provide a more general-purpose string handling
+solution that is easy to use and understand.
 
    2.1 Glossary of Terms
 ------------------------
 
-...
-
-   2.2 Literature Review
-------------------------
-
-...
+string reference: A string reference is an alias for an unsigned 32-bit integer
+that represents a string in a string pool. It is used to identify and access
+strings in the pool without storing the actual string data. This saves many
+allocations whereas a string can allocate around 24 bytes on a 64-bit ABI,
+while a string reference only allocates 4 bytes.
 
 3. Method
 ----------------------------------------------------------------------------
@@ -147,12 +208,52 @@ to this project, see the CONTRIBUTING.md file for that.
    3.1 Methodology
 ------------------
 
-...
+For this project, the methodology used was to first identify the requirements
+and limitations of the library, and then design and implement the various
+components of the library.
+
+The design was focused on minimizing memory usage and maximizing performance,
+while also ensuring that the library is easy to use and understand.
+
+The alamgamated header file was created to provide a single header file that
+contains all the implementations of the library, making it easier for users
+to include the library in their projects without having to include multiple
+files.
+
+The alamgamated header file is not fully matured with the rest of the library.
+In the future, the alamgamated header file may either be updated to support
+the extensions, or the alamgamated header file may also be removed because of
+recent implementations involving multiple header files.
 
   3.5 Implementations
 ---------------------
 
-...
+This library is implemented in C++17, and is designed to be portable and efficient.
+The library is built on a foundation of string references, string pools, and
+string views, with a focus on minimizing memory usage and maximizing performance.
+
+Below is a list of all the implementations in the library:
+
+1. String Reference: A string reference is an alias for an unsigned 32-bit integer
+   that represents a string in a string pool. It is used to identify and access
+   strings in the pool without storing the actual string data.
+
+2. String Pool: A string pool is a container that stores strings and their
+   corresponding references. It is responsible for managing the lifetime of
+   the strings and providing access to them through their references.
+
+3. String View: A string view is an object that provides a view of a string
+   without owning the string data. It stores a string reference and a pointer
+   to the string data, allowing for efficient access to the string's contents.
+
+4. String Pool View: A string pool view is an object that provides a view of
+   the strings in a string pool. It allows for iteration over the strings
+   in the pool and provides access to their references and data.
+
+5. String Set, String Map, and String Multi-Map: These are container types that
+   provide set, map, and multi-map functionality for strings. They are built
+   on top of the string pool and provide efficient access to strings through
+   their references.
 
 4. Implementations
 ----------------------------------------------------------------------------
@@ -160,32 +261,119 @@ to this project, see the CONTRIBUTING.md file for that.
    4.1 Summary
 --------------
 
-...
+Below is a list of all the implementations in the library:
+
+1. String Reference: A string reference is an alias for an unsigned 32-bit integer
+   that represents a string in a string pool. It is used to identify and access
+   strings in the pool without storing the actual string data.
+
+2. String Pool: A string pool is a container that stores strings and their
+   corresponding references. It is responsible for managing the lifetime of
+   the strings and providing access to them through their references.
+
+3. String View: A string view is an object that provides a view of a string
+   without owning the string data. It stores a string reference and a pointer
+   to the string data, allowing for efficient access to the string's contents.
+
+4. String Pool View: A string pool view is an object that provides a view of
+   the strings in a string pool. It allows for iteration over the strings
+   in the pool and provides access to their references and data.
+
+5. String Set, String Map, and String Multi-Map: These are container types that
+   provide set, map, and multi-map functionality for strings. They are built
+   on top of the string pool and provide efficient access to strings through
+   their references.
 
    4.2 Implementation Details
 -----------------------------
 
-...
+The amalgamated header file is a single header file that contains all the
+core implementations but may discard more recent implementations.
+
+The strings are hashed using the FNV-1a hash function, which is a fast and
+efficient hash function that provides good distribution of hash values.
+The hash function is used to generate a unique hash value for each string,
+which is then used for deduplication in the string pool.
+
+There is a hash-table implementation and many containers that are built on top of it.
+The hash-table implementation is therefore very complex, and it is designed to be
+cache-friendly and fast. It uses buckets and templates that lets it function as
+three different container types. That is a set, map, and multi-map.
+Any similar containers in the String Reference library will always be deduced into
+one of these three implementations for efficiency and for the standard.
 
    4.3 Performance
 ------------------
 
-...
+On a 64-bit ABI, a string reference allocates 4 bytes, a string object allocates
+16 bytes, and a string view allocates 24 bytes. You can see why in their respective
+sections. The pool orchastrates the lifetime of the strings, and the string
+reference is an alias for an unsigned 32-bit integer that represents a string in a
+string pool and is used to retrieve information about it.
+
+More performance information will be added once they are found here.
 
    4.6 String Pool and String Pool View
 --------------------------------------
 
-...
+The string pool is a container that stores strings and their corresponding
+references. It is responsible for managing the lifetime of the strings and
+providing access to them through their references. The string pool is designed
+to be efficient and minimize memory usage, while also providing fast access to
+strings. Using a multi-map, it deduces the string reference from the string hash,
+and then retrieves the string from the pool using the string reference.
+
+The string pool view is an object that provides a view of the strings in a string
+pool. It allows for iteration over the strings in the pool and provides access to
+their references and data. The string pool view is designed to be efficient and
+minimize memory usage, while also providing fast access to strings.
+
+It is important to note that the string pool view does not own the strings in the
+pool, and therefore does not manage their lifetime. Instead, it provides a read-only
+view of the strings in the pool, allowing for efficient access to their data without
+the overhead of copying or managing the strings themselves.
 
    4.7 String Reference and String View
 --------------------------------------
 
-...
+The string reference is an alias for an unsigned 32-bit integer that represents
+a string in a string pool. It is used to identify and access strings and
+information about them without storing the actual string data. This saves many
+allocations whereas a string can allocate around 24 bytes on a 64-bit ABI, while
+a string reference only allocates 4 bytes.
+
+The string objects is much alike the string reference, but it stores a pointer to
+the pool and the identification of the string. This allows for efficient access to
+the string's contents and information about it, while also minimizing memory usage.
+Because it has both fields, the string reference and a pointer to the pool, it
+allocates around 16 bytes on a 64-bit ABI, which is more than the string reference
+but still less than a string object.
+
+The string view is an object that provides a view of a string by owning information
+about the string in itself. It stores a string reference, a pointer to the string
+data, and the length of the string. This allows for efficient access to the string's
+contents and information about it, while also minimizing memory usage. Because it has
+all three fields, the string view allocates around 24 bytes on a 64-bit ABI. This is
+often an unnecessary allocation and unwanted, but it is useful if you don't want to
+retrieve information about the string yourself.
 
    4.8 String Set, String Map, and String Multi-Map
 ---------------------------------------------------
 
-...
+These containers are built on top of the string pool and provide efficient
+access to items through their references.
+
+The string set is a container that stores unique string references, while
+the string map is a container that stores key-value pairs of string references
+and a template type name.
+
+The string multi-map is a container that allows multiple values to be associated
+with a single key, and is built on top of the hash-table implementation like
+the other containers.
+
+These containers are designed to be efficient and provide fast access to
+strings, or through string, using their references, while also minimizing
+memory usage.
 
    4.9 The Amalgamated Header File
 ----------------------------------
@@ -218,7 +406,22 @@ for the standard.
    4.11 Extensions
 ------------------
 
-...
+The extensions are not part of the core library, but they provide additional
+functionality that can be useful for certain applications. The extensions
+include string sets, maps, and multi-maps, which provide additional container
+types for managing strings.
+
+These extensions are built on top of the core library and provide efficient
+access to strings through their references, while also minimizing memory usage.
+The extensions are designed to be easy to use and understand, while also
+providing additional functionality for managing strings in C++.
+
+You have to include every header file for the extensions, and they are neither
+included in the amalgamated header file or work with the amalgamated header file
+included. The extensions are not part of the core library, and they are not
+required for the library to function. They are provided as additional
+functionality for users who want to use them. See more about their definition
+in the methodology section.
 
 5. Discussion and Conclucions
 ----------------------------------------------------------------------------
@@ -226,24 +429,55 @@ for the standard.
    5.1 Implementation Discussion
 --------------------------------
 
-...
+This discussion will be updated in the future when there is something to discuss.
 
    5.2 Method Discussion
 ------------------------
 
-...
+This discussion will be updated in the future when there is something to discuss.
 
    5.3 Future Work
 ------------------
 
-...
+In the future, I plan to add more features and functionality to the library,
+including additional container types, improved performance, and better support
+for multi-threading.
+
+License
+----------------------------------------------------------------------------
+
+Find more information about the license at https://opensource.org/licenses/MIT
+
+____________________________________________________________________________
+MIT License
+
+Copyright (c) 2006 Neo-Erik Östlund-Zetterberg
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
 
 List of Sources
 ----------------------------------------------------------------------------
 
-...
+There are no sources at the moment.
 
 Appendices
 ----------------------------------------------------------------------------
 
-...
+There are no appendices at the moment.

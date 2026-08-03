@@ -49,6 +49,17 @@ namespace string_ref::extensions
 				insert(text, value);
 		}
 
+		string_multimap()
+			: pool_(&string_pool::get_global_instance())
+		{
+		}
+
+		string_multimap(
+			std::initializer_list<std::pair<const char*, T>> init)
+		{
+			*this = string_multimap(string_pool::get_global_instance(), init);
+		}
+
 		[[nodiscard]]
 		bool empty() const noexcept
 		{

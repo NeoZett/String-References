@@ -65,6 +65,25 @@ namespace string_ref::extensions
 				insert(*first);
 		}
 
+		string_set()
+			: pool_(&string_pool::get_global_instance())
+		{
+		}
+
+		string_set(
+			std::initializer_list<const char*> init)
+		{
+			*this = string_set(string_pool::get_global_instance(), init);
+		}
+
+		template <class Iterator>
+		string_set(
+			Iterator first,
+			Iterator last)
+		{
+			*this = string_set(string_pool::get_global_instance(), first, last);
+		}
+
 		[[nodiscard]]
 		bool empty() const noexcept
 		{

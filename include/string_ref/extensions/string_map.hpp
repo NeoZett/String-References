@@ -47,6 +47,17 @@ namespace string_ref::extensions
 				insert(text, value);
 		}
 
+		string_map()
+			: pool_(&string_pool::get_global_instance())
+		{
+		}
+
+		string_map(
+			std::initializer_list<std::pair<const char*, T>> init)
+		{
+			*this = string_map(string_pool::get_global_instance(), init);
+		}
+
 		[[nodiscard]]
 		bool empty() const noexcept
 		{
