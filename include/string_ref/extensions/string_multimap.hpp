@@ -118,7 +118,7 @@ namespace string_ref::extensions
 
 		size_type erase(const char* text)
 		{
-			auto ref = pool_->find_reference(text);
+			auto ref = pool_->find(text);
 
 			if (ref == base::invalid_reference)
 				return 0;
@@ -140,7 +140,7 @@ namespace string_ref::extensions
 		[[nodiscard]]
 		bool contains(const char* text) const
 		{
-			auto ref = pool_->find_reference(text);
+			auto ref = pool_->find(text);
 
 			if (ref == base::invalid_reference)
 				return false;
@@ -163,7 +163,7 @@ namespace string_ref::extensions
 		[[nodiscard]]
 		size_type count(const char* text) const
 		{
-			auto ref = pool_->find_reference(text);
+			auto ref = pool_->find(text);
 			return ref == base::invalid_reference ? 0 : count(ref);
 		}
 
@@ -190,7 +190,7 @@ namespace string_ref::extensions
 		[[nodiscard]]
 		std::pair<iterator, iterator> equal_range(const char* text)
 		{
-			auto ref = pool_->find_reference(text);
+			auto ref = pool_->find(text);
 
 			if (ref == base::invalid_reference)
 				return { end(), end() };
@@ -201,7 +201,7 @@ namespace string_ref::extensions
 		[[nodiscard]]
 		std::pair<const_iterator, const_iterator> equal_range(const char* text) const
 		{
-			auto ref = pool_->find_reference(text);
+			auto ref = pool_->find(text);
 
 			if (ref == base::invalid_reference)
 				return { end(), end() };

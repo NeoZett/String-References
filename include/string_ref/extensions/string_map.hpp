@@ -156,7 +156,7 @@ namespace string_ref::extensions
 
 		bool erase(const char* text)
 		{
-			auto ref = pool_->find_reference(text);
+			auto ref = pool_->find(text);
 
 			if (ref == base::invalid_reference)
 				return false;
@@ -178,7 +178,7 @@ namespace string_ref::extensions
 		[[nodiscard]]
 		bool contains(const char* text) const
 		{
-			auto ref = pool_->find_reference(text);
+			auto ref = pool_->find(text);
 
 			if (ref == base::invalid_reference)
 				return false;
@@ -212,14 +212,14 @@ namespace string_ref::extensions
 		[[nodiscard]]
 		T* find(const char* text)
 		{
-			auto ref = pool_->find_reference(text);
+			auto ref = pool_->find(text);
 			return ref == base::invalid_reference ? nullptr : find(ref);
 		}
 
 		[[nodiscard]]
 		const T* find(const char* text) const
 		{
-			auto ref = pool_->find_reference(text);
+			auto ref = pool_->find(text);
 			return ref == base::invalid_reference ? nullptr : find(ref);
 		}
 
