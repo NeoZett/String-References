@@ -460,8 +460,11 @@ You have to include every header file for the extensions, and they are neither
 included in the amalgamated header file or work with the amalgamated header file
 included. The extensions are not part of the core library, and they are not
 required for the library to function. They are provided as additional
-functionality for users who want to use them. See more about their definition
-in the methodology section.
+functionality for users who want to use them.
+
+See more about the definition of implementations that are part of the core,
+and what is not, in the methodology section and limitations and
+requirements section.
 
 5. Discussion and Conclucions
 ----------------------------------------------------------------------------
