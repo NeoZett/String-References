@@ -196,11 +196,24 @@ solution that is easy to use and understand.
    2.1 Glossary of Terms
 ------------------------
 
-string reference: A string reference is an alias for an unsigned 32-bit integer
-that represents a string in a string pool. It is used to identify and access
-strings in the pool without storing the actual string data. This saves many
-allocations whereas a string can allocate around 24 bytes on a 64-bit ABI,
-while a string reference only allocates 4 bytes.
+- A bit: A bit is the smallest unit of data in a computer, representing a
+  binary value of 0 or 1.
+
+- A byte: A byte is a unit of data that consists of 8 bits, and is used to
+  represent a single character or symbol in a computer.
+
+- An ABI: An ABI (Application Binary Interface) is a set of rules and
+  conventions that define how different components of a software system
+  interact at the binary level. It specifies things like data types,
+  calling conventions, and memory layout.
+
+- LLVM: LLVM is a collection of modular and reusable compiler and toolchain
+  technologies. It is designed to optimize code at compile-time, link-time,
+  and run-time.
+
+- Clang: Clang is a compiler front-end for the C, C++, and Objective-C
+  programming languages. It is part of the LLVM project and is designed
+  to be fast, efficient, and compatible with existing compilers.
 
 3. Method
 ----------------------------------------------------------------------------
