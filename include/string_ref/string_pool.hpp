@@ -12,9 +12,10 @@ namespace string_ref
     namespace extensions
     {
         class string_set;
+        template <typename T>
         class string_map;
+        template <typename T>
         class string_multimap;
-        class string_registry;
     }
 
     /* @brief The `string_pool` optimizes and unifies into
@@ -312,9 +313,10 @@ namespace string_ref
         friend struct string_view;
 
         friend class extensions::string_set;
+        template <typename T>
         friend class extensions::string_map;
+        template <typename T>
         friend class extensions::string_multimap;
-        friend class extensions::string_registry;
     };
 
 	// Public inline implementations and interface

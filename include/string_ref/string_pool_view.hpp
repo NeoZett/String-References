@@ -21,7 +21,7 @@ namespace string_ref
 
         string_pool_view() noexcept
         {
-            pool_ = &string_pool::instance();
+            pool_ = &string_pool::get_global_instance();
         }
 
         string_pool_view(

@@ -11,18 +11,13 @@ int main()
 {
 	string_ref::string_pool pool;
 
-	string_ref::extensions::string_set mySet(pool);
+	string_ref::extensions::string_map<int> myMap(pool);
 
 	string_ref::string text("hello", pool);
 
-	mySet.insert(text);
+	myMap["hello"] = 42;
 
-	for (const auto& str : mySet)
-	{
-		std::cout << str.reference() << ": " << str.c_str() << std::endl;
-	}
-
-	std::cout << mySet.contains(text.reference()) << std::endl;
+	std::cout << myMap["hello"] << std::endl; // Output: 42
 
 	return 0;
 }

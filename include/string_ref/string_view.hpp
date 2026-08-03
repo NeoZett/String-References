@@ -155,7 +155,7 @@ namespace string_ref
             const char* text) noexcept
             : string_view(
                 text,
-                string_pool::instance())
+                string_pool::get_global_instance())
         {
         }
 
@@ -163,7 +163,7 @@ namespace string_ref
             string_reference ref) noexcept
             : string_view(
                 ref,
-                string_pool::instance())
+                string_pool::get_global_instance())
         {
         }
 
@@ -171,7 +171,7 @@ namespace string_ref
             const string_definition& def) noexcept
             : string_view(
                 def,
-                string_pool::instance())
+                string_pool::get_global_instance())
         {
         }
 
@@ -179,7 +179,7 @@ namespace string_ref
             const_iterator value) noexcept
             : string_view(
                 value,
-                string_pool::instance())
+                string_pool::get_global_instance())
         {
         }
 
@@ -187,7 +187,7 @@ namespace string_ref
             const_reverse_iterator value) noexcept
             : string_view(
                 value,
-                string_pool::instance())
+                string_pool::get_global_instance())
         {
         }
     };
