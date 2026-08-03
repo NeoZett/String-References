@@ -12,4 +12,4 @@ To contribute to the C++ String References project, please follow these guidelin
 4. Submit a pull request with a detailed description of your changes,
    including any relevant issue numbers.
 
-> **Thank you for your contributions!**
+**Thank you for your contributions!**

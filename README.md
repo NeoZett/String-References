@@ -28,7 +28,7 @@ iterations. The project consists of three layers:
    and/or string pool view objects. This is more efficient because you are
    only retrieving relevant information.
 
-## 4.6 String Pool and String Pool View 📊
+## 4.4 String Pool and String Pool View 📊
 
 The string pool is a container that stores strings and their corresponding
 references. It is responsible for managing the lifetime of the strings and
@@ -47,7 +47,7 @@ pool, and therefore does not manage their lifetime. Instead, it provides a read-
 view of the strings in the pool, allowing for efficient access to their data without
 the overhead of copying or managing the strings themselves.
 
-## 4.7 String Reference and String View 🔎
+## 4.5 String Reference and String View 🔎
 
 The string reference is an alias for an unsigned 32-bit integer that represents
 a string in a string pool. It is used to identify and access strings and
@@ -70,7 +70,7 @@ all three fields, the string view allocates around 24 bytes on a 64-bit ABI. Thi
 often an unnecessary allocation and unwanted, but it is useful if you don't want to
 retrieve information about the string yourself.
 
-## 4.8 String set, String Map, and String Multi-Map 🗺️
+## 4.6 String set, String Map, and String Multi-Map 🗺️
 
 These containers are built on top of the string pool and provide efficient
 access to items through their references.
