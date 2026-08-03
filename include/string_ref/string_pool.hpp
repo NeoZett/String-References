@@ -28,6 +28,12 @@ namespace string_ref
     public:
         string_pool() = default;
 
+        string_pool(const string_pool&) = delete;
+        string_pool& operator=(const string_pool&) = delete;
+
+        string_pool(string_pool&&) noexcept = default;
+        string_pool& operator=(string_pool&&) noexcept = default;
+
         struct string_definition
         {
             std::uint32_t offset;
